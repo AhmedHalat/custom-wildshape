@@ -273,6 +273,7 @@
 			// save level
 			const level = parseInt(levelInput.value) || 1;
 			localStorage.setItem('level', levelInput.value);
+			saveTemplate();
 			const totalPoints = level * 3;
 			let usedPoints = 0;
 
