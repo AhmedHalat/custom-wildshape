@@ -10,6 +10,7 @@
 			margin: 20px;
 			padding: 0;
 			line-height: 1.6;
+			background: #ff9292;
 		}
 		.container {
 			max-width: 600px;
@@ -18,6 +19,7 @@
 			border: 1px solid #ccc;
 			border-radius: 10px;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			background: #fff;
 		}
 		h1 {
 			text-align: center;
@@ -73,15 +75,15 @@
 			<h3>Modifiers:</h3>
 			<div class="form-group">
 				<label for="hit-dice">HP/Hit Dice:</label>
-				<input type="number" id="hit-dice" min="4" max="12" value="4" class="hit-dice modifier">
+				<input type="number" id="hit-dice" min="4" max="12" value="4" class="hit-dice modifier" step="2">
 			</div>
 			<div class="form-group">
 				<label for="damage-dice">Damage Dice:</label>
-				<input type="number" id="damage-dice" min="4" max="12" value="4" class="damage-dice modifier">
+				<input type="number" id="damage-dice" min="4" max="12" value="4" class="damage-dice modifier" step="2">
 			</div>
 			<div class="form-group">
 				<label for="speed">Speed (ft):</label>
-				<input type="number" id="speed" min="20" max="50" value="20" class="speed modifier">
+				<input type="number" id="speed" min="20" max="50" value="20" class="speed modifier" step="10">
 			</div>
 		</div>
 
@@ -178,6 +180,7 @@
 		const attributeCheckboxes = document.querySelectorAll('.attribute-checkbox');
 		const statInputs = document.querySelectorAll('.stat-input');
 		const modifiers = document.querySelectorAll('.modifier');
+		const speedInput = document.getElementById('speed');
 		const remainingStatPointsSpan = document.getElementById('remaining-stat-points');
 
 		const templateSelector = document.getElementById('template-selector');
@@ -204,6 +207,8 @@
 			modifiers.forEach(modifier => {
 				modifierStats[modifier.id] = parseInt(modifier.value);
 			});
+
+			modifierStats['speed'] = parseInt(speedInput.value);
 
 			template.attributes = attributes;
 			template.stats = stats;
@@ -237,6 +242,8 @@
 
 				modifier.value = template.modifiers[modifier.id] || base;
 			});
+
+			speedInput.value = template.modifiers['speed'] || 20;
 
 			updatePoints();
 			updateStatPoints();
@@ -277,9 +284,6 @@
 				} else {
 					checkbox.disabled = false;
 				}
-				if (checkbox.checked) {
-					usedPoints += parseInt(checkbox.dataset.cost);
-				}
 			});
 
 			let remainingPoints = totalPoints - usedPoints;
@@ -290,9 +294,6 @@
 			// Update remaining points across all templates
 			for (let i = 0; i < templateSelector.options.length; i++) {
 				const templateName = templateSelector.options[i].value;
-				// skip current template
-				if (templateName === templateSelector.value) continue;
-
 				const template = JSON.parse(localStorage.getItem(templateName));
 				if (template) {
 					let templateUsedPoints = 0;
@@ -309,7 +310,9 @@
 						if (modifier.includes('hit-dice') || modifier.includes('damage-dice')) {
 							templateUsedPoints += getDiceCost(modifierValue);
 						} else if (modifier.includes('speed')) {
-							if (modifierValue > 20) templateUsedPoints += (modifierValue - 20) / 10;
+							templateUsedPoints += getSpeedCost(modifierValue);
+						} else {
+							templateUsedPoints += modifierValue;
 						}
 					}
 					remainingPoints -= templateUsedPoints;
@@ -347,19 +350,27 @@
 		function getDiceCost(diceValue) {
 			let cost = 0;
 			if (diceValue > 4) cost += 1;
-			if (diceValue > 5) cost += 3;
-			if (diceValue > 6) cost += 5;
-			if (diceValue > 7) cost += 8;
-			if (diceValue > 8) cost += 13;
-			if (diceValue > 9) cost += 21;
-			if (diceValue > 10) cost += 34;
-			if (diceValue > 11) cost += 55;
+			if (diceValue > 6) cost += 2;
+			if (diceValue > 8) cost += 3;
+			if (diceValue > 10) cost += 4;
+			if (diceValue > 12) cost += 5;
+			return cost;
+		}
+
+		function getSpeedCost(speedValue) {
+			let cost = 0;
+			if (speedValue > 20) cost += 1;
+			if (speedValue > 30) cost += 2;
+			if (speedValue > 40) cost += 3;
+			if (speedValue > 50) cost += 4;
+
 			return cost;
 		}
 
 		function updateDicePoints() {
 			const hitDiceInput = document.getElementById('hit-dice');
 			const damageDiceInput = document.getElementById('damage-dice');
+			const speedInput = document.getElementById('speed');
 			const diceInputs = [hitDiceInput, damageDiceInput];
 
 			let usedDicePoints = 0;
@@ -379,12 +390,18 @@
 				}
 			});
 
+			usedPoints += getSpeedCost(parseInt(speedInput.value));
+
 			let remainingPoints = totalPoints - usedPoints - usedDicePoints;
 			remainingPointsSpan.textContent = remainingPoints;
 			remainingPointsSpan.style.color = remainingPoints < 0 ? 'red' : 'green';
+
+			// Update remaining points across all templates
+			saveTemplate();
+			updatePoints();
 		}
 
-		const diceInputs = document.querySelectorAll('#hit-dice, #damage-dice');
+		const diceInputs = document.querySelectorAll('#hit-dice, #damage-dice, #speed');
 		diceInputs.forEach(input => input.addEventListener('input', updateDicePoints));
 
 		levelInput.addEventListener('input', updatePoints);
