@@ -1,418 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Wild Shape Point Selector</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			margin: 20px;
-			padding: 0;
-			line-height: 1.6;
-			background: #ff9292;
-		}
-		.container {
-			max-width: 600px;
-			margin: 0 auto;
-			padding: 20px;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			background: #fff;
-		}
-		h1 {
-			text-align: center;
-		}
-		h3 {
-			margin-bottom: 5px;
-		}
-		h4 {
-			margin-top: 10px;
-			margin-bottom: 5px;
-		}
-		.form-group {
-			margin-bottom: 15px;
-		}
-		label {
-			font-weight: bold;
-		}
-		.attribute, .stat {
-			margin-bottom: 10px;
-		}
-		.attribute input, .stat input {
-			margin-right: 10px;
-		}
-		#remaining-points, #remaining-stat-points {
-			font-weight: bold;
-			color: green;
-		}
-	</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wild Shape Point Selector</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #2c3e50;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Modal Container */
+    .modal {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      max-width: 800px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    h1 {
+      color: #444;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Input Groups */
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    /* WP Display */
+    .wp-display {
+      background-color: #f4f4f9;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .wp-display p {
+      margin: 5px 0;
+    }
+
+    .warning {
+      color: red;
+      font-weight: bold;
+    }
+
+    /* Attributes Section */
+    .attributes {
+      margin-bottom: 20px;
+    }
+
+    .attributes h2 {
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    .attributes div {
+      margin-bottom: 10px;
+    }
+
+    .attributes label {
+      display: block;
+      margin: 5px 0;
+      color: #555;
+    }
+
+    .attributes input {
+      margin-right: 10px;
+    }
+
+    .attributes input:disabled {
+      opacity: 0.5;
+    }
+
+    /* Stats Section */
+    .stats {
+      margin-bottom: 20px;
+    }
+
+    .stats h2 {
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    .stats label {
+      display: block;
+      margin: 5px 0;
+      color: #555;
+    }
+
+    .stats input {
+      width: 60px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    /* Template Controls */
+    .template-controls {
+      margin-bottom: 20px;
+    }
+
+    .template-controls select, .template-controls input, .template-controls button {
+      padding: 8px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .template-controls button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .template-controls button:hover {
+      background-color: #2980b9;
+    }
+  </style>
 </head>
 <body>
-	<div class="container">
-		<h1>Wild Shape Points Selector</h1>
-		<div class="form-group">
-			<label for="level">Enter Your Level:</label>
-			<input type="number" id="level" min="1" value="1">
-		</div>
+  <div class="modal">
+    <h1>Wild Shape Point Selector</h1>
 
-		<div id="templates">
-			<h3>Templates:</h3>
-			<select id="template-selector">
-				<option value="template1">Template 1</option>
-				<option value="template2">Template 2</option>
-				<option value="template3">Template 3</option>
-				<option value="template4">Template 4</option>
-			</select>
-		</div>
+    <!-- Level Input -->
+    <div class="input-group">
+      <label for="level">Level:</label>
+      <input type="number" id="level" min="1" max="20" value="1">
+    </div>
 
-		<div class="form-group">
-			<p>Remaining Points: <span id="remaining-points">3</span></p>
-		</div>
+    <!-- Wild Shape Points Display -->
+    <div class="wp-display">
+      <p>Total WP: <span id="total-wp">3</span></p>
+      <p>Remaining WP: <span id="remaining-wp">3</span></p>
+      <p class="warning" id="wp-warning" style="display: none;">Not enough WP!</p>
+    </div>
 
-		<div id="modifiers">
-			<h3>Modifiers:</h3>
-			<div class="form-group">
-				<label for="hit-dice">HP/Hit Dice:</label>
-				<input type="number" id="hit-dice" min="4" max="12" value="4" class="hit-dice modifier" step="2">
-			</div>
-			<div class="form-group">
-				<label for="damage-dice">Damage Dice:</label>
-				<input type="number" id="damage-dice" min="4" max="12" value="4" class="damage-dice modifier" step="2">
-			</div>
-			<div class="form-group">
-				<label for="speed">Speed (ft):</label>
-				<input type="number" id="speed" min="20" max="50" value="20" class="speed modifier" step="10">
-			</div>
-		</div>
+    <!-- Template Controls -->
+    <div class="template-controls">
+      <label for="template-select">Template:</label>
+      <select id="template-select">
+        <option value="1">Template 1</option>
+        <option value="2">Template 2</option>
+        <option value="3">Template 3</option>
+      </select>
+      <input type="text" id="template-name" placeholder="Template Name">
+    </div>
 
-		<div id="attributes">
-			<h3>Select Attributes:</h3>
-			<div class="attribute-category">
-				<h4>Movement</h4>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="3"> <label>Fly (8) - 3 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Burrow - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Swim (4) - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Climb - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="3"> <label>SpiderClimb - 3 WP</label></div>
-			</div>
-			<div class="attribute-category">
-				<h4>Vision</h4>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="1"> <label>Darkvision - 1 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Tremor Sense - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="3"> <label>Blindsight - 3 WP</label></div>
-			</div>
-			<div class="attribute-category">
-				<h4>Combat</h4>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="5"> <label>Multiattack (5) - 5 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="1"> <label>Pack Tactics - 1 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Ranged Attack - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Trample - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="3"> <label>Rampage (3) - 3 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="1"> <label>Ink Cloud - 1 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="3"> <label>Constrict - 3 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Flyby - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="3"> <label>Shield - 3 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="1"> <label>Mommy Poulet - 1 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="1"> <label>Daddy Beef - 1 WP</label></div>
-			</div>
-			<div class="attribute-category">
-				<h4>Perception</h4>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Keen Smell - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Keen Hearing - 2 WP</label></div>
-				<div class="attribute"><input type="checkbox" class="attribute-checkbox" data-cost="2"> <label>Keen Sight - 2 WP</label></div>
-			</div>
-		</div>
-		<style>
-			.attribute-category {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 10px;
-			}
-			.attribute-category h4 {
-				flex: 1 1 100%;
-			}
-			.attribute {
-				flex: 1 1 calc(50% - 10px);
-				display: flex;
-				align-items: center;
-			}
-		</style>
+    <!-- Attribute Selection -->
+    <div class="attributes">
+      <h2>Attributes</h2>
+      <div>
+        <h3>Movement</h3>
+        <label><input type="checkbox" data-cost="3" data-category="movement" id="fly"> Fly (8)</label>
+        <label><input type="checkbox" data-cost="2" data-category="movement" id="burrow"> Burrow</label>
+        <label><input type="checkbox" data-cost="2" data-category="movement" id="swim"> Swim (4)</label>
+        <label><input type="checkbox" data-cost="2" data-category="movement" id="climb"> Climb</label>
+        <label><input type="checkbox" data-cost="3" data-category="movement" id="spider-climb"> Spider Climb</label>
+        <label><input type="checkbox" data-cost="-2" data-category="movement" id="sacrifice"> Sacrifice</label>
+      </div>
+      <div>
+        <h3>Vision</h3>
+        <label><input type="checkbox" data-cost="1" data-category="vision" id="darkvision"> Darkvision</label>
+        <label><input type="checkbox" data-cost="2" data-category="vision" id="tremor-sense"> Tremor Sense</label>
+        <label><input type="checkbox" data-cost="3" data-category="vision" id="blindsight"> Blindsight</label>
+      </div>
+      <div>
+        <h3>Combat</h3>
+        <label><input type="checkbox" data-cost="5" data-category="combat" id="multiattack"> Multiattack (5)</label>
+        <label><input type="checkbox" data-cost="1" data-category="combat" id="pack-tactics"> Pack Tactics</label>
+        <label><input type="checkbox" data-cost="2" data-category="combat" id="ranged-attack"> Ranged Attack</label>
+        <label><input type="checkbox" data-cost="2" data-category="combat" id="trample"> Trample</label>
+        <label><input type="checkbox" data-cost="3" data-category="combat" id="rampage"> Rampage (3)</label>
+        <label><input type="checkbox" data-cost="1" data-category="combat" id="ink-cloud"> Ink Cloud</label>
+        <label><input type="checkbox" data-cost="3" data-category="combat" id="constrict"> Constrict</label>
+        <label><input type="checkbox" data-cost="2" data-category="combat" id="flyby"> Flyby</label>
+        <label><input type="checkbox" data-cost="3" data-category="combat" id="shield"> Shield</label>
+        <label><input type="checkbox" data-cost="1" data-category="combat" id="mommy-poulet"> Mommy Poulet</label>
+        <label><input type="checkbox" data-cost="1" data-category="combat" id="daddy-beef"> Daddy Beef</label>
+      </div>
+      <div>
+        <h3>Perception</h3>
+        <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-smell"> Keen Smell</label>
+        <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-hearing"> Keen Hearing</label>
+        <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-sight"> Keen Sight</label>
+      </div>
+    </div>
 
-		<div id="stats">
-			<h3>Assign Stat Points:</h3>
-			<p>Remaining Stat Points: <span id="remaining-stat-points">30</span></p>
-			<div class="stat" data-stat="Strength">
-				<label>Strength:</label>
-				<input type="number" class="stat-input" min="10" value="10">
-			</div>
-			<div class="stat" data-stat="Dexterity">
-				<label>Dexterity:</label>
-				<input type="number" class="stat-input" min="10" value="10">
-			</div>
-			<div class="stat" data-stat="Constitution">
-				<label>Constitution:</label>
-				<input type="number" class="stat-input" min="10" value="10">
-			</div>
-			<!-- <div class="stat" data-stat="Intelligence">
-				<label>Intelligence:</label>
-				<input type="number" class="stat-input" min="10" value="10">
-			</div>
-			<div class="stat" data-stat="Wisdom">
-				<label>Wisdom:</label>
-				<input type="number" class="stat-input" min="10" value="10">
-			</div>
-			<div class="stat" data-stat="Charisma">
-				<label>Charisma:</label>
-				<input type="number" class="stat-input" min="10" value="10">
-			</div> -->
-		</div>
-	</div>
+    <!-- Stat Allocation -->
+    <div class="stats">
+      <h2>Stat Allocation</h2>
+      <p>Remaining Stat Points: <span id="remaining-stat-points">30</span></p>
+      <div>
+        <label>Strength: <input type="number" id="strength" min="10" max="20" value="10"></label>
+        <label>Dexterity: <input type="number" id="dexterity" min="10" max="20" value="10"></label>
+        <label>Constitution: <input type="number" id="constitution" min="10" max="20" value="10"></label>
+      </div>
+      <p class="warning" id="stat-warning" style="display: none;">Not enough stat points!</p>
+    </div>
+  </div>
 
-	<script>
-		const levelInput = document.getElementById('level');
-		if (localStorage.getItem('level')) {
-			levelInput.value = localStorage.getItem('level');
-		}
+  <script>
+    // Constants
+    const WP_PER_LEVEL = 3;
+    const BASE_STAT_POINTS = 30;
+    const STAT_POINTS_PER_LEVEL = 2;
+    const TEMPLATE_COUNT = 3;
 
-		const remainingPointsSpan = document.getElementById('remaining-points');
-		const attributeCheckboxes = document.querySelectorAll('.attribute-checkbox');
-		const statInputs = document.querySelectorAll('.stat-input');
-		const modifiers = document.querySelectorAll('.modifier');
-		const speedInput = document.getElementById('speed');
-		const remainingStatPointsSpan = document.getElementById('remaining-stat-points');
+    // DOM Elements
+    const levelInput = document.getElementById('level');
+    const totalWP = document.getElementById('total-wp');
+    const remainingWP = document.getElementById('remaining-wp');
+    const wpWarning = document.getElementById('wp-warning');
+    const statInputs = document.querySelectorAll('.stats input');
+    const remainingStatPoints = document.getElementById('remaining-stat-points');
+    const statWarning = document.getElementById('stat-warning');
+    const templateSelect = document.getElementById('template-select');
+    const templateNameInput = document.getElementById('template-name');
+    const attributeCheckboxes = document.querySelectorAll('.attributes input');
 
-		const templateSelector = document.getElementById('template-selector');
-		let previousTemplate = templateSelector.value;
+    // State
+    let currentWP = 3;
+    let currentStatPoints = 30;
+    let templates = Array(TEMPLATE_COUNT).fill({ name: '', attributes: {}, stats: {} });
+    let selectedTemplateId = 0;
+    let playerLevel = 1;
 
-		function saveTemplate(name) {
-			const templateName = name || templateSelector.value;
+    // Initialize
+    loadTemplatesFromStorage();
+    updateLevel();
+    loadTemplate();
+    updateTemplateDropdown();
 
-			console.log('Saving template:', templateName);
-			if (!templateName) return;
+    // Event Listeners
+    levelInput.addEventListener('input', () => {
+      playerLevel = parseInt(levelInput.value);
+      updateLevel();
+      savePlayerLevel();
+      refreshTemplates();
+    });
 
-			const template = {}
-			const attributes = {};
-			const stats = {};
-			const modifierStats = {};
-			attributeCheckboxes.forEach(checkbox => {
-				attributes[checkbox.nextElementSibling.textContent.trim()] = checkbox.checked;
-			});
+    attributeCheckboxes.forEach(input => {
+      input.addEventListener('change', () => {
+        updateAttributes();
+        saveTemplate();
+        refreshTemplates();
+      });
+    });
 
-			statInputs.forEach(input => {
-				stats[input.previousElementSibling.textContent.trim()] = parseInt(input.value);
-			});
+    statInputs.forEach(input => {
+      input.addEventListener('input', () => {
+        updateStats();
+        saveTemplate();
+      });
+    });
 
-			modifiers.forEach(modifier => {
-				modifierStats[modifier.id] = parseInt(modifier.value);
-			});
+    templateSelect.addEventListener('change', () => {
+      selectedTemplateId = parseInt(templateSelect.value) - 1;
+      loadTemplate();
+    });
 
-			modifierStats['speed'] = parseInt(speedInput.value);
+    templateNameInput.addEventListener('input', () => {
+      templates[selectedTemplateId].name = templateNameInput.value;
+      saveTemplate();
+      updateTemplateDropdown();
+    });
 
-			template.attributes = attributes;
-			template.stats = stats;
-			template.modifiers = modifierStats;
+    // Functions
+    function updateLevel() {
+      const total = playerLevel * WP_PER_LEVEL;
+      totalWP.textContent = total;
+      updateRemainingWP();
+    }
 
-			localStorage.setItem(templateName, JSON.stringify(template));
-		}
+    function updateRemainingWP() {
+      const totalWPUsed = calculateTotalWPUsed();
+      const remaining = playerLevel * WP_PER_LEVEL - totalWPUsed;
+      remainingWP.textContent = remaining;
 
-		function loadTemplate() {
-			if (previousTemplate) saveTemplate(previousTemplate);
-			const templateName = templateSelector.value;
-			if (!templateName) return;
+      if (remaining < 0) {
+        wpWarning.style.display = 'block';
+      } else {
+        wpWarning.style.display = 'none';
+      }
+    }
 
-			let template = JSON.parse(localStorage.getItem(templateName));
-			if (!template) {
-				template = { attributes: {}, stats: {}, modifiers: {} };
-			}
+    function calculateTotalWPUsed() {
+      let totalWPUsed = 0;
+      templates.forEach(template => {
+        Object.entries(template.attributes).forEach(([attr, checked]) => {
+          if (checked) {
+            const box = document.getElementById(attr);
+            if (box) totalWPUsed += parseInt(box.dataset.cost);
+          }
+        });
+      });
+      return totalWPUsed;
+    }
 
-			attributeCheckboxes.forEach(checkbox => {
-				const label = checkbox.nextElementSibling.textContent.trim();
-				checkbox.checked = template.attributes[label];
-			});
+    function enabledInOtherTemplates(attr) {
+      return templates.some((template, index) => {
+        if (index === selectedTemplateId) return false;
+        return template.attributes[attr];
+      });
+    }
 
-			statInputs.forEach(input => {
-				const label = input.previousElementSibling.textContent.trim();
-				input.value = template.stats[label];
-			});
+    function updateAttributes() {
+      const totalWPUsed = calculateTotalWPUsed();
+      const remaining = playerLevel * WP_PER_LEVEL - totalWPUsed;
 
-			modifiers.forEach(modifier => {
-				let base = modifier.id.includes('dice') ? 4 : 20;
+      // Disable attributes if they exceed the remaining WP
+      attributeCheckboxes.forEach(box => {
+        const cost = parseInt(box.dataset.cost);
 
-				modifier.value = template.modifiers[modifier.id] || base;
-			});
+        if (!box.checked && (remaining < cost || enabledInOtherTemplates(box.id))) {
+          box.disabled = true;
+        } else {
+          box.disabled = false;
+        }
+      });
 
-			speedInput.value = template.modifiers['speed'] || 20;
+      updateRemainingWP();
+    }
 
-			updatePoints();
-			updateStatPoints();
-			previousTemplate = templateName;
-		}
+    function updateStats() {
+      let totalCost = 0;
+      statInputs.forEach(input => {
+        const value = parseInt(input.value);
+        if (value > 13 && value <= 17) {
+          totalCost += (value - 10) + (value - 13);
+        } else if (value > 17) {
+          totalCost += (value - 10) + 4 + (value - 17) * 2;
+        } else {
+          totalCost += value - 10;
+        }
+      });
+      remainingStatPoints.textContent = currentStatPoints - totalCost;
 
-		function isAttributeSelectedInOtherTemplates(attributeLabel) {
-			const currentTemplate = templateSelector.value;
-			for (let i = 0; i < templateSelector.options.length; i++) {
-				const templateName = templateSelector.options[i].value;
-				if (templateName !== currentTemplate) {
-					const template = JSON.parse(localStorage.getItem(templateName));
-					if (template && template.attributes && template.attributes[attributeLabel]) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
+      if (totalCost > currentStatPoints) {
+        statWarning.style.display = 'block';
+      } else {
+        statWarning.style.display = 'none';
+      }
+    }
 
-		const statPointsByLevel = {
-			1: 30, 2: 32, 3: 34, 4: 36, 5: 38, 6: 40, 7: 42, 8: 44, 9: 46, 10: 48,
-			11: 50, 12: 52, 13: 54, 14: 56, 15: 58, 16: 60, 17: 62, 18: 64, 19: 66, 20: 68
-		};
+    function saveTemplate() {
+      const attributes = {};
+      attributeCheckboxes.forEach(box => {
+        attributes[box.id] = box.checked;
+      });
 
-		function updatePoints() {
-			// save level
-			const level = parseInt(levelInput.value) || 1;
-			localStorage.setItem('level', levelInput.value);
-			saveTemplate();
-			const totalPoints = level * 3;
-			let usedPoints = 0;
+      templates[selectedTemplateId] = {
+        name: templateNameInput.value,
+        attributes,
+        stats: {
+          strength: parseInt(document.getElementById('strength').value),
+          dexterity: parseInt(document.getElementById('dexterity').value),
+          constitution: parseInt(document.getElementById('constitution').value),
+        }
+      };
+      localStorage.setItem('templates', JSON.stringify(templates));
+    }
 
-			attributeCheckboxes.forEach(checkbox => {
-				const label = checkbox.nextElementSibling.textContent.trim();
-				if (isAttributeSelectedInOtherTemplates(label)) {
-					checkbox.disabled = true;
-					checkbox.checked = false;
-				} else {
-					checkbox.disabled = false;
-				}
-			});
+    function loadTemplate() {
+      const template = templates[selectedTemplateId];
+      if (template) {
+        // Reset all checkboxes
+        attributeCheckboxes.forEach(box => box.checked = false);
+        // Check saved attributes
+        Object.entries(template.attributes).forEach(([attr, checked]) => {
+          const box = document.getElementById(attr);
+          if (box) box.checked = checked;
+        });
+        // Load stats
+        document.getElementById('strength').value = template.stats.strength || 10;
+        document.getElementById('dexterity').value = template.stats.dexterity || 10;
+        document.getElementById('constitution').value = template.stats.constitution || 10;
+        // Load template name
+        templateNameInput.value = template.name || '';
+        updateAttributes();
+        updateStats();
+      }
+    }
 
-			let remainingPoints = totalPoints - usedPoints;
+    function loadTemplatesFromStorage() {
+      const savedTemplates = localStorage.getItem('templates');
+      if (savedTemplates) {
+        templates = JSON.parse(savedTemplates);
+      }
+      const savedLevel = localStorage.getItem('playerLevel');
+      if (savedLevel) {
+        playerLevel = parseInt(savedLevel);
+        levelInput.value = playerLevel;
+      }
+    }
 
-			// Update stat points based on level
-			remainingStatPointsSpan.textContent = statPointsByLevel[level] || 30;
+    function savePlayerLevel() {
+      localStorage.setItem('playerLevel', playerLevel);
+    }
 
-			// Update remaining points across all templates
-			for (let i = 0; i < templateSelector.options.length; i++) {
-				const templateName = templateSelector.options[i].value;
-				const template = JSON.parse(localStorage.getItem(templateName));
-				if (template) {
-					let templateUsedPoints = 0;
-					for (const attribute in template.attributes) {
-						if (template.attributes[attribute]) {
-							const checkbox = Array.from(attributeCheckboxes).find(cb => cb.nextElementSibling.textContent.trim() === attribute);
-							if (checkbox) {
-								templateUsedPoints += parseInt(checkbox.dataset.cost);
-							}
-						}
-					}
-					for (const modifier in template.modifiers) {
-						const modifierValue = template.modifiers[modifier];
-						if (modifier.includes('hit-dice') || modifier.includes('damage-dice')) {
-							templateUsedPoints += getDiceCost(modifierValue);
-						} else if (modifier.includes('speed')) {
-							templateUsedPoints += getSpeedCost(modifierValue);
-						} else {
-							templateUsedPoints += modifierValue;
-						}
-					}
-					remainingPoints -= templateUsedPoints;
-				}
-			}
-			remainingPointsSpan.textContent = remainingPoints;
-			remainingPointsSpan.style.color = remainingPoints < 0 ? 'red' : 'green';
-		}
+    function refreshTemplates() {
+      loadTemplate();
+      updateAttributes();
+      updateStats();
+    }
 
-		function updateStatPoints() {
-			let usedStatPoints = 0;
-			statInputs.forEach(input => {
-				let statValue = parseInt(input.value) || 10;
-				let cost = statValue - 10;
-				if (statValue > 13) cost += (statValue - 13);
-				if (statValue > 17) cost += (statValue - 17);
-				usedStatPoints += cost;
-			});
-
-			const level = parseInt(levelInput.value) || 1;
-			const totalStatPoints = statPointsByLevel[level] || 30;
-			const remainingStatPoints = totalStatPoints - usedStatPoints;
-			remainingStatPointsSpan.textContent = remainingStatPoints;
-			remainingStatPointsSpan.style.color = remainingStatPoints < 0 ? 'red' : 'green';
-		}
-
-		function rollDice(s, n = 1) {
-			const results = [];
-			for (let i = 0; i < n; i++) {
-				results.push(Math.floor(Math.random() * s) + 1);
-			}
-			return results;
-		}
-
-		function getDiceCost(diceValue) {
-			let cost = 0;
-			if (diceValue > 4) cost += 1;
-			if (diceValue > 6) cost += 2;
-			if (diceValue > 8) cost += 3;
-			if (diceValue > 10) cost += 4;
-			if (diceValue > 12) cost += 5;
-			return cost;
-		}
-
-		function getSpeedCost(speedValue) {
-			let cost = 0;
-			if (speedValue > 20) cost += 1;
-			if (speedValue > 30) cost += 2;
-			if (speedValue > 40) cost += 3;
-			if (speedValue > 50) cost += 4;
-
-			return cost;
-		}
-
-		function updateDicePoints() {
-			const hitDiceInput = document.getElementById('hit-dice');
-			const damageDiceInput = document.getElementById('damage-dice');
-			const speedInput = document.getElementById('speed');
-			const diceInputs = [hitDiceInput, damageDiceInput];
-
-			let usedDicePoints = 0;
-
-			diceInputs.forEach(input => {
-				let diceValue = parseInt(input.value) || 4;
-				usedDicePoints += getDiceCost(diceValue);
-			});
-
-			const level = parseInt(levelInput.value) || 1;
-			const totalPoints = level * 3;
-			let usedPoints = 0;
-
-			attributeCheckboxes.forEach(checkbox => {
-				if (checkbox.checked) {
-					usedPoints += parseInt(checkbox.dataset.cost);
-				}
-			});
-
-			usedPoints += getSpeedCost(parseInt(speedInput.value));
-
-			let remainingPoints = totalPoints - usedPoints - usedDicePoints;
-			remainingPointsSpan.textContent = remainingPoints;
-			remainingPointsSpan.style.color = remainingPoints < 0 ? 'red' : 'green';
-
-			// Update remaining points across all templates
-			saveTemplate();
-			updatePoints();
-		}
-
-		const diceInputs = document.querySelectorAll('#hit-dice, #damage-dice, #speed');
-		diceInputs.forEach(input => input.addEventListener('input', updateDicePoints));
-
-		levelInput.addEventListener('input', updatePoints);
-		attributeCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updatePoints));
-		statInputs.forEach(input => input.addEventListener('input', updateStatPoints));
-
-		templateSelector.addEventListener('change', loadTemplate);
-
-		// Initial load
-		loadTemplate();
-	</script>
+    function updateTemplateDropdown() {
+      templateSelect.innerHTML = '';
+      templates.forEach((template, index) => {
+        const option = document.createElement('option');
+        option.value = index + 1;
+        option.textContent = template.name || `Template ${index + 1}`;
+        templateSelect.appendChild(option);
+      });
+      templateSelect.value = selectedTemplateId + 1;
+    }
+  </script>
 </body>
 </html>
