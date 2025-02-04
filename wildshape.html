@@ -67,6 +67,12 @@
 
     .wp-display p {
       margin: 5px 0;
+      font-size: 16px;
+    }
+
+    .wp-display span {
+      font-weight: bold;
+      font-size: 18px;
     }
 
     .warning {
@@ -82,16 +88,22 @@
     .attributes h2 {
       color: #444;
       margin-bottom: 10px;
+      font-size: 20px;
     }
 
     .attributes div {
       margin-bottom: 10px;
+	    display: grid;
+	    grid-template-columns: auto auto;
+      gap: 10px;
     }
 
     .attributes label {
-      display: block;
+      display: flex;
+      align-items: center;
       margin: 5px 0;
       color: #555;
+      font-weight: bold;
     }
 
     .attributes input {
@@ -110,12 +122,14 @@
     .stats h2 {
       color: #444;
       margin-bottom: 10px;
+      font-size: 20px;
     }
 
     .stats label {
       display: block;
       margin: 5px 0;
       color: #555;
+      font-weight: bold;
     }
 
     .stats input {
@@ -124,6 +138,19 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       font-size: 14px;
+    }
+
+    .stats span {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .positive {
+      color: green;
+    }
+
+    .negative {
+      color: red;
     }
 
     /* Template Controls */
@@ -182,8 +209,8 @@
     <!-- Attribute Selection -->
     <div class="attributes">
       <h2>Attributes</h2>
+	  <h3>Movement</h3>
       <div>
-        <h3>Movement</h3>
         <label><input type="checkbox" data-cost="3" data-category="movement" id="fly"> Fly (8)</label>
         <label><input type="checkbox" data-cost="2" data-category="movement" id="burrow"> Burrow</label>
         <label><input type="checkbox" data-cost="2" data-category="movement" id="swim"> Swim (4)</label>
@@ -191,31 +218,35 @@
         <label><input type="checkbox" data-cost="3" data-category="movement" id="spider-climb"> Spider Climb</label>
         <label><input type="checkbox" data-cost="-2" data-category="movement" id="sacrifice"> Sacrifice</label>
       </div>
+	  <h3>Vision</h3>
       <div>
-        <h3>Vision</h3>
         <label><input type="checkbox" data-cost="1" data-category="vision" id="darkvision"> Darkvision</label>
         <label><input type="checkbox" data-cost="2" data-category="vision" id="tremor-sense"> Tremor Sense</label>
         <label><input type="checkbox" data-cost="3" data-category="vision" id="blindsight"> Blindsight</label>
       </div>
+	  <h3>Combat</h3>
+    <div>
+      <label><input type="checkbox" data-cost="5" data-category="combat" id="multiattack"> Multiattack (5)</label>
+      <label><input type="checkbox" data-cost="1" data-category="combat" id="pack-tactics"> Pack Tactics</label>
+      <label><input type="checkbox" data-cost="2" data-category="combat" id="ranged-attack"> Ranged Attack</label>
+      <label><input type="checkbox" data-cost="2" data-category="combat" id="trample"> Trample</label>
+      <label><input type="checkbox" data-cost="3" data-category="combat" id="rampage"> Rampage (3)</label>
+      <label><input type="checkbox" data-cost="1" data-category="combat" id="ink-cloud"> Ink Cloud</label>
+      <label><input type="checkbox" data-cost="3" data-category="combat" id="constrict"> Constrict</label>
+      <label><input type="checkbox" data-cost="2" data-category="combat" id="flyby"> Flyby</label>
+      <label><input type="checkbox" data-cost="3" data-category="combat" id="shield"> Shield</label>
+      <label><input type="checkbox" data-cost="1" data-category="combat" id="mommy-poulet"> Mommy Poulet</label>
+      <label><input type="checkbox" data-cost="1" data-category="combat" id="daddy-beef"> Daddy Beef</label>
+	</div>
+	<h3>Perception</h3>
       <div>
-        <h3>Combat</h3>
-        <label><input type="checkbox" data-cost="5" data-category="combat" id="multiattack"> Multiattack (5)</label>
-        <label><input type="checkbox" data-cost="1" data-category="combat" id="pack-tactics"> Pack Tactics</label>
-        <label><input type="checkbox" data-cost="2" data-category="combat" id="ranged-attack"> Ranged Attack</label>
-        <label><input type="checkbox" data-cost="2" data-category="combat" id="trample"> Trample</label>
-        <label><input type="checkbox" data-cost="3" data-category="combat" id="rampage"> Rampage (3)</label>
-        <label><input type="checkbox" data-cost="1" data-category="combat" id="ink-cloud"> Ink Cloud</label>
-        <label><input type="checkbox" data-cost="3" data-category="combat" id="constrict"> Constrict</label>
-        <label><input type="checkbox" data-cost="2" data-category="combat" id="flyby"> Flyby</label>
-        <label><input type="checkbox" data-cost="3" data-category="combat" id="shield"> Shield</label>
-        <label><input type="checkbox" data-cost="1" data-category="combat" id="mommy-poulet"> Mommy Poulet</label>
-        <label><input type="checkbox" data-cost="1" data-category="combat" id="daddy-beef"> Daddy Beef</label>
-      </div>
-      <div>
-        <h3>Perception</h3>
-        <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-smell"> Keen Smell</label>
-        <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-hearing"> Keen Hearing</label>
-        <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-sight"> Keen Sight</label>
+        <div>
+          <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-smell"> Keen Smell</label>
+          <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-hearing"> Keen Hearing</label>
+        </div>
+        <div>
+          <label><input type="checkbox" data-cost="2" data-category="perception" id="keen-sight"> Keen Sight</label>
+        </div>
       </div>
     </div>
 
@@ -309,6 +340,7 @@
       const totalWPUsed = calculateTotalWPUsed();
       const remaining = playerLevel * WP_PER_LEVEL - totalWPUsed;
       remainingWP.textContent = remaining;
+      remainingWP.className = remaining >= 0 ? 'positive' : 'negative';
 
       if (remaining < 0) {
         wpWarning.style.display = 'block';
@@ -368,6 +400,7 @@
         }
       });
       remainingStatPoints.textContent = currentStatPoints - totalCost;
+      remainingStatPoints.className = (currentStatPoints - totalCost) >= 0 ? 'positive' : 'negative';
 
       if (totalCost > currentStatPoints) {
         statWarning.style.display = 'block';
