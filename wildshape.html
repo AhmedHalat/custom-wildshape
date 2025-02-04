@@ -93,8 +93,8 @@
 
     .attributes div {
       margin-bottom: 10px;
-	    display: grid;
-	    grid-template-columns: auto auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
 
@@ -330,9 +330,15 @@
     });
 
     // Functions
+    function calculateStatPoints(level) {
+      return 30 + (level - 1) * 2;
+    }
+
     function updateLevel() {
       const total = playerLevel * WP_PER_LEVEL;
       totalWP.textContent = total;
+      currentStatPoints = calculateStatPoints(playerLevel);
+      remainingStatPoints.textContent = currentStatPoints - calculateStatCost();
       updateRemainingWP();
     }
 
@@ -407,6 +413,21 @@
       } else {
         statWarning.style.display = 'none';
       }
+    }
+
+    function calculateStatCost() {
+      let totalCost = 0;
+      statInputs.forEach(input => {
+        const value = parseInt(input.value);
+        if (value > 13 && value <= 17) {
+          totalCost += (value - 10) + (value - 13);
+        } else if (value > 17) {
+          totalCost += (value - 10) + 4 + (value - 17) * 2;
+        } else {
+          totalCost += value - 10;
+        }
+      });
+      return totalCost;
     }
 
     function saveTemplate() {
